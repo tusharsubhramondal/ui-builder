@@ -37,4 +37,5 @@ export const FooterWidget = {
         </footer>
     `,
     category: 'Widgets',
+    active: true
 };

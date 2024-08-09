@@ -4,12 +4,16 @@ import 'grapesjs/dist/css/grapes.min.css';
 import '../assets/css/styles.css'; // Make sure to include your custom styles
 import devicesConfig from '../util/Devices';
 import Toolbar from '../components/Toolbar';
+import { BoxBlock } from '../components/Box';
+import { BasicForm } from '../components/Form';
+import { FooterWidget } from '../components/template/Footer';
+import { OneColumnBlock, ThreeColumnBlock, TwoColumnBlock, TwoColumnByThreeSevenBlock } from '../components/blocks';
 
 const GraphJsEditor = () => {
 
   const [editor, setEditor] = useState(null);
   const [activePanel, setActivePanel] = useState(null);
-  const [activeDevice, setActiveDevice] = useState('Tablet');
+  const [activeDevice, setActiveDevice] = useState('Desktop');
 
   const [showLayers, setShowLayers] = useState(false);
 
@@ -28,31 +32,7 @@ const GraphJsEditor = () => {
         width: 'auto',
         storageManager: false,
         blockManager: {
-          appendTo: '#blocks',
-          blocks: [
-            {
-              id: 'section',
-              label: '<b>Section</b>',
-              attributes: { class: 'gjs-block-section' },
-              content: `
-                <section>
-                  <h1>This is a simple title</h1>
-                  <div>This is just a Lorem text: Lorem ipsum dolor sit amet</div>
-                </section>`,
-            },
-            {
-              id: 'text',
-              label: 'Text',
-              content: '<div data-gjs-type="text">Insert your text here</div>',
-            },
-            {
-              id: 'image',
-              label: 'Image',
-              select: true,
-              content: { type: 'image' },
-              activate: true,
-            },
-          ],
+          appendTo: '#blocks',          
         },
         styleManager: {
           appendTo: '.styles-container',
@@ -94,6 +74,13 @@ const GraphJsEditor = () => {
 
       setEditor(editor);
 
+      editor.BlockManager.blocks.add(OneColumnBlock);
+      editor.BlockManager.blocks.add(TwoColumnBlock);
+      editor.BlockManager.blocks.add(ThreeColumnBlock);
+      editor.BlockManager.blocks.add(TwoColumnByThreeSevenBlock);
+       // Check if FooterWidget was added successfully
+      console.log('Blocks in BlockManager:', editor.BlockManager.getAll());
+
       editor.setDevice(activeDevice);
       console.log(activeDevice, 'activeDevice');
 
@@ -130,6 +117,7 @@ const GraphJsEditor = () => {
 
       console.log(editor.Commands.getAll());
 
+      
     }
   }, []);
 
