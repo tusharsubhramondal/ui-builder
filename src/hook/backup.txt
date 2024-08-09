@@ -1,0 +1,277 @@
+import React, { useEffect, useRef, useState } from 'react';
+import grapesjs from 'grapesjs';
+import 'grapesjs/dist/css/grapes.min.css';
+import '../assets/css/styles.css'; // Make sure to include your custom styles
+import devicesConfig from '../util/Devices';
+import Toolbar from '../components/Toolbar';
+
+const GraphJsEditor = () => {
+
+  const [editor, setEditor] = useState(null);
+  const editorRef = useRef(null);
+
+  useEffect(() => {
+    if (editorRef.current) {
+      const editor = grapesjs.init({
+        container: '#gjs',
+        fromElement: true,
+        height: '93vh',
+        width: 'auto',
+        storageManager: false,
+        blockManager: {
+          appendTo: '#blocks',
+          blocks: [
+            {
+              id: 'section',
+              label: '<b>Section</b>',
+              attributes: { class: 'gjs-block-section' },
+              content: `
+                <section>
+                  <h1>This is a simple title</h1>
+                  <div>This is just a Lorem text: Lorem ipsum dolor sit amet</div>
+                </section>`,
+            },
+            {
+              id: 'text',
+              label: 'Text',
+              content: '<div data-gjs-type="text">Insert your text here</div>',
+            },
+            {
+              id: 'image',
+              label: 'Image',
+              select: true,
+              content: { type: 'image' },
+              activate: true,
+            },
+          ],
+        },
+        layerManager: {
+          appendTo: '.layers-container',
+        },
+        panels: {
+          defaults: [
+            {
+              id: 'layers',
+              el: '.panel__right',
+              resizable: {
+                maxDim: 350,
+                minDim: 200,
+                tc: 0,
+                cl: 1,
+                cr: 0,
+                bc: 0,
+                keyWidth: 'flex-basis',
+              },
+            },
+            {
+              id: 'panel-switcher',
+              el: '.panel__switcher',
+              buttons: [
+                {
+                  id: 'show-layers',
+                  // active: true,
+                  label: `<svg style="display: block; max-width:22px" viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M12,16L19.36,10.27L21,9L12,2L3,9L4.63,10.27M12,18.54L4.62,12.81L3,14.07L12,21.07L21,14.07L19.37,12.8L12,18.54Z"></path>
+                        </svg>`,
+                  command: 'show-layers',
+                  togglable: true,
+                },
+                {
+                  id: 'show-style',
+                  // active: true,
+                  label: `<svg style="display: block; max-width:22px" viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M20.71,4.63L19.37,3.29C19,2.9 18.35,2.9 17.96,3.29L9,12.25L11.75,15L20.71,6.04C21.1,5.65 21.1,5 20.71,4.63M7,14A3,3 0 0,0 4,17C4,18.31 2.84,19 2,19C2.92,20.22 4.5,21 6,21A4,4 0 0,0 10,17A3,3 0 0,0 7,14Z"></path>
+                        </svg>`,
+                  command: 'show-styles',
+                  togglable: true,
+                },
+                {
+                  id: 'fullscreen',
+                  label: `<svg style="display: block; max-width:22px" viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z"></path>
+                        </svg>`,
+                  command: 'toggle-fullscreen',
+                  togglable: false,
+                },
+                {
+                  id: 'clear-canvas',
+                  label: `<svg style="display: block; max-width:22px" viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"></path>
+                        </svg>`,
+                  command: 'clear-canvas',
+                  togglable: false,
+                },
+                {
+                  id: 'preview',
+                  label: `<svg style="display: block; max-width:22px" viewBox="0 0 24 24"><path fill="currentColor" d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z"></path></svg>`,
+                  command: 'toggle-preview',
+                  togglable: false,
+                },
+              ],
+            },
+          ],
+        },
+        selectorManager: {
+          appendTo: '.styles-container',
+        },
+        styleManager: {
+          appendTo: '.styles-container',
+          sectors: [
+            {
+              name: 'Dimension',
+              open: false,
+              buildProps: ['width', 'min-height', 'padding'],
+              properties: [
+                {
+                  type: 'integer',
+                  name: 'The width',
+                  property: 'width',
+                  units: ['px', '%'],
+                  defaults: 'auto',
+                  min: 0,
+                },
+              ],
+            },
+            {
+              name: 'Extra',
+              open: false,
+              buildProps: ['background-color', 'box-shadow', 'custom-prop'],
+              properties: [
+                {
+                  id: 'custom-prop',
+                  name: 'Custom Label',
+                  property: 'font-size',
+                  type: 'select',
+                  defaults: '32px',
+                  options: [
+                    { value: '12px', name: 'Tiny' },
+                    { value: '18px', name: 'Medium' },
+                    { value: '32px', name: 'Big' },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        deviceManager: {
+        },
+      });
+
+      editor.Panels.addPanel({
+        id: 'panel-top',
+        el: '.panel__top',
+      });
+
+      editor.Panels.addPanel({
+        id: 'basic-actions',
+        el: '.panel__basic-actions',
+        buttons: [
+          {
+            id: 'visibility',
+            active: true,
+            className: 'btn-toggle-borders',
+            label: `<svg style="display: block; max-width:22px" viewBox="0 0 24 24">
+                      <path fill="currentColor" d="M15,5H17V3H15M15,21H17V19H15M11,5H13V3H11M19,5H21V3H19M19,9H21V7H19M19,21H21V19H19M19,13H21V11H19M19,17H21V15H19M3,5H5V3H3M3,9H5V7H3M3,13H5V11H3M3,17H5V15H3M3,21H5V19H3M11,21H13V19H11M7,21H9V19H7M7,5H9V3H7V5Z"></path>
+                  </svg>`,
+            command: 'sw-visibility',
+          },
+          {
+            id: 'export',
+            className: 'btn-open-export',
+            label: `<svg style="display: block; max-width:22px" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M12.89,3L14.85,3.4L11.11,21L9.15,20.6L12.89,3M19.59,12L16,8.41V5.58L22.42,12L16,18.41V15.58L19.59,12M1.58,12L8,5.58V8.41L4.41,12L8,15.58V18.41L1.58,12Z"></path>
+                </svg>`,
+            command: 'export-template',
+            context: 'export-template',
+          },
+          {
+            id: 'show-json',
+            className: 'btn-show-json',
+            label: '{}',
+            context: 'show-json',
+            command(editor) {
+              editor.Modal.setTitle('Components JSON')
+                .setContent(`
+                  <textarea style="width:100%; height: 250px;">
+                    ${JSON.stringify(editor.getComponents())}
+                  </textarea>
+                `)
+                .open();
+            },
+          },
+          {
+            id: 'import',
+            className: 'btn-open-import',
+            label: `<svg style="display: block; max-width:22px" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M12,2L3,9H8V15H16V9H21L12,2M12,18A3,3 0 0,0 15,15H9A3,3 0 0,0 12,18Z"></path>
+                </svg>`,
+            command: 'import-template',
+            context: 'import-template',
+          },
+        ],
+      });
+
+      // Define 'show-layers' command
+      editor.Commands.add('show-layers', {
+        run(editor, sender) {
+          const lmEl = document.querySelector('.layers-container');
+          lmEl.style.display = 'block'; // Show layers container
+        },
+        stop(editor, sender) {
+          const lmEl = document.querySelector('.layers-container');
+          lmEl.style.display = 'none'; // Hide layers container
+        },
+      });
+
+      // Define 'show-styles' command
+      editor.Commands.add('show-styles', {
+        run(editor, sender) {
+          const smEl = document.querySelector('.styles-container');
+          smEl.style.display = 'block'; // Show styles container
+        },
+        stop(editor, sender) {
+          const smEl = document.querySelector('.styles-container');
+          smEl.style.display = 'none'; // Hide styles container
+        },
+      });
+
+      // Initialize the display state of the panels to hidden
+      document.querySelector('.layers-container').style.display = 'none';
+      document.querySelector('.styles-container').style.display = 'none';
+
+
+      setEditor(editor);
+
+    }
+  }, []);
+
+  const setDevice = (deviceType) => {
+    if (editor) {
+      editor.setDevice(deviceType);
+    }
+  };
+
+  return (
+    <>
+      <Toolbar/>
+      <div className="panel__top">
+        <div className="panel__basic-actions"></div>
+         <div className="panel__devices"></div> 
+        <div className="panel__switcher"></div>
+      </div>
+
+      <div className="editor-row">
+        <div id="blocks"></div>
+        <div className="editor-canvas">
+          <div id="gjs" ref={editorRef}></div>
+        </div>
+        <div className="panel__right">
+          <div className="layers-container"></div>
+          <div className="styles-container"></div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default GraphJsEditor;

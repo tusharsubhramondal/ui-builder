@@ -1,0 +1,51 @@
+
+.panel__top {
+  padding: 0;
+  width: 100%;
+  display: flex;
+  position: initial;
+  justify-content: center;
+  justify-content: space-between;
+
+  .panel__basic-actions {
+    position: initial !important;
+  }
+
+  .panel__switcher {
+    position: initial !important;
+  }
+}
+
+.toolbar {
+  background-color: #f0f8ff;
+  /* margin-bottom: 10px; */
+}
+
+i {
+  font-size: 24px !important;
+}
+
+i:hover {
+  color: blueviolet;
+  cursor: pointer;
+}
+
+.faIcon {
+  height: 40px;
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.faIcon:hover {
+  cursor: pointer;
+}
+
+.panelSvg:hover {
+  color: blueviolet;
+}
+
+.active {
+  color: blueviolet;
+}
