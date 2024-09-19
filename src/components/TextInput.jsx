@@ -6,5 +6,5 @@ export const TextInput = {
             <input type="text" id="text-input" name="text-input" placeholder="Enter text" style="width: 100%; padding: 8px; box-sizing: border-box;" />
         </div>
     `,
-    category: 'Inputs',
+    category: 'Inputs',    
 };

@@ -3,11 +3,7 @@ import grapesjs from 'grapesjs';
 import 'grapesjs/dist/css/grapes.min.css';
 import '../assets/css/styles.css'; // Make sure to include your custom styles
 import devicesConfig from '../util/Devices';
-import Toolbar from '../components/Toolbar';
-import { BoxBlock } from '../components/Box';
-import { BasicForm } from '../components/Form';
-import { FooterWidget } from '../components/template/Footer';
-import { OneColumnBlock, ThreeColumnBlock, TwoColumnBlock, TwoColumnByThreeSevenBlock } from '../components/blocks';
+import { Image, Input, Link, OneColumnBlock, Quote, TextBlock, TextSelection, ThreeColumnBlock, TwoColumnBlock, TwoColumnByThreeSevenBlock } from '../components/blocks';
 
 const GraphJsEditor = () => {
 
@@ -32,13 +28,16 @@ const GraphJsEditor = () => {
         width: 'auto',
         storageManager: false,
         blockManager: {
-          appendTo: '#blocks',          
+          appendTo: '#blocks',         
         },
         styleManager: {
           appendTo: '.styles-container',
         },
         layerManager: {
           appendTo: '.layers-container',
+        },
+        traitManager: {
+          appendTo: ".trait-container",
         },
         panels: {
           defaults: [
@@ -65,6 +64,12 @@ const GraphJsEditor = () => {
             devicesConfig
           ]
         },
+        canvas: {
+          styles: [
+            'https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css',
+            '/grapes.css'
+          ]
+        },
       });
 
       editor.Panels.addPanel({
@@ -72,13 +77,79 @@ const GraphJsEditor = () => {
         el: '.panel__top',
       });
 
-      setEditor(editor);
+      setEditor(editor);     
 
       editor.BlockManager.blocks.add(OneColumnBlock);
       editor.BlockManager.blocks.add(TwoColumnBlock);
       editor.BlockManager.blocks.add(ThreeColumnBlock);
       editor.BlockManager.blocks.add(TwoColumnByThreeSevenBlock);
-       // Check if FooterWidget was added successfully
+      editor.BlockManager.blocks.add(TextBlock);
+      editor.BlockManager.blocks.add(Link);
+      editor.BlockManager.blocks.add(Image);
+      editor.BlockManager.blocks.add(Quote);
+      editor.BlockManager.blocks.add(TextSelection);
+
+      editor.BlockManager.blocks.add(Input);
+
+      editor.Components.addType('input', {
+        isComponent: el => el.tagName === 'INPUT',
+        model: {
+          defaults: {
+            traits: [
+              'id',
+              // 'name',
+              'placeholder',             
+              {
+                type: 'select', // Type of the trait
+                name: 'type', // (required) The name of the attribute/property to use on component
+                label: 'Type', // The label you will see in Settings
+                options: [
+                  { id: 'text', label: 'Text' },
+                  { id: 'email', label: 'Email' },
+                  { id: 'password', label: 'Password' },
+                  { id: 'number', label: 'Number' },
+                ]
+              }, 
+              {
+                type: 'checkbox',
+                name: 'required',
+              },
+              {
+                type: 'number',
+                name: 'maxlength',
+                label: 'Max Length',
+                changeProp: 1,
+              },
+              {
+                type: 'text',
+                name: 'pattern',
+                label: 'Pattern',
+                changeProp: 1,
+              }
+            ],
+            // As by default, traits are bound to attributes, so to define
+            // their initial value we can use attributes
+            attributes: { 
+              type: 'text', 
+              required: false, 
+              maxlength: 2,
+              pattern: null,                          
+            },
+            placeholder: 'place..',  
+            init() {
+              // Also the listener changes from `change:attributes:*` to `change:*`
+              this.on('change:attributes:placeholder', this.handlePlhChange);
+            },
+            handlePlhChange() {              
+              getPlaceHolder();
+              console.log('Input type changed to: ', this.getAttributes().placeholder);
+            }
+          },
+        },
+      });
+
+      
+      // Check if FooterWidget was added successfully
       console.log('Blocks in BlockManager:', editor.BlockManager.getAll());
 
       editor.setDevice(activeDevice);
@@ -117,9 +188,12 @@ const GraphJsEditor = () => {
 
       console.log(editor.Commands.getAll());
 
-      
     }
   }, []);
+
+  const getPlaceHolder = () => {
+    console.log('getPlaceHolder')
+  };
 
   /**
    * Toggles the visibility of the sw-visibility command on the editor.
@@ -294,10 +368,10 @@ const GraphJsEditor = () => {
 
       <div className='row toolbar mx-0'>
         <div className="col d-flex">
-          <span className='faIcon' onClick={setSwVisibility}><i className={`fa fa-square-o ${ visible ? 'active' : ''}`} aria-hidden="true"></i></span>
+          <span className='faIcon' onClick={setSwVisibility}><i className={`fa fa-square-o ${visible ? 'active' : ''}`} aria-hidden="true"></i></span>
           <span className='faIcon' onClick={() => exportTemplate()}><i className="fa fa-code" aria-hidden="true"></i></span>
         </div>
-        
+
         <div className="col d-flex justify-content-center">
           <span className={`faIcon ${activeDevice === 'Desktop' ? 'active' : ''}`} onClick={() => setDevice('Desktop')}><i className="fa fa-desktop" aria-hidden="true"></i></span>
           <span className={`faIcon ${activeDevice === 'Tablet' ? 'active' : ''}`} onClick={() => setDevice('Tablet')}><i className="fa fa-tablet" aria-hidden="true"></i></span>
@@ -344,6 +418,7 @@ const GraphJsEditor = () => {
         <div className="panel__right">
           <div className="layers-container"></div>
           <div className="styles-container"></div>
+          <div className='trait-container'></div>
         </div>
       </div>
     </>
